@@ -1,4 +1,4 @@
-import { Input } from "@material-tailwind/react";
+import { Input } from "@/components/ui/input"
 import './index.css'
 import './styles/index.css'
 
