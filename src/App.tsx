@@ -1,5 +1,4 @@
 import { Input } from "@/components/ui/input"
-import './index.css'
 import './styles/index.css'
 
 function App() {
