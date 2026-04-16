@@ -2,7 +2,11 @@ import { useEffect, useState, useCallback, useMemo } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { LoadMoreButton } from "@/components/load-more-button"
 import { ReviewsFeed } from "@/components/reviews-feed"
-import { ReviewsSkeleton } from "@/components/reviews-skeleton"
+import {
+  ReviewsSkeleton,
+  ReviewsError,
+  ReviewsNotFound
+} from "@/components/reviews-placeholder"
 import { SearchFilters } from "@/components/search-filters"
 import { useDebouncedSearch } from "@/hooks/useDebouncedSearch"
 import './styles/index.css'
@@ -83,7 +87,7 @@ function App() {
     setLoadedFilterKey(filterKey);
   }, [filterKey, isInitialLoading, page]);
 
-  const { loading } = useDebouncedSearch({
+  const { loading, error } = useDebouncedSearch({
     endpoint,
     delay: 350,
     enabled: true,
@@ -98,6 +102,13 @@ function App() {
       return next;
     });
   }, [setSearchParams]);
+
+  const reviewSection = useMemo(() => {
+    if (isInitialLoading) return <ReviewsSkeleton />;
+    if (error) return <ReviewsError />;
+    if (!loading && reviews.length === 0) return <ReviewsNotFound />;
+    return <ReviewsFeed reviews={reviews} />;
+  }, [isInitialLoading, error, loading, reviews]);
 
   return (
     <main className="container mx-auto p-4">
@@ -126,10 +137,7 @@ function App() {
         }}
       />
 
-      {isInitialLoading ?
-        <ReviewsSkeleton /> :
-        <ReviewsFeed reviews={reviews} />
-      }
+      {reviewSection}
 
       <LoadMoreButton
         loading={loading}

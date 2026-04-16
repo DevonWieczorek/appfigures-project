@@ -155,6 +155,12 @@
   }
 }
 
+@layer util {
+  .error {
+    @apply border-red-500 bg-red-50 text-red-700;
+  }
+}
+
 @layer components {
   .reviews-wrapper {
     @apply flex flex-col gap-2 border-1 rounded-sm p-2;
