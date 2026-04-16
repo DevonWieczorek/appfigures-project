@@ -1,20 +1,7 @@
 import { useMemo, type FC } from 'react';
 import { Review } from "@/components/review"
 import { groupReviews } from '@/lib/utils';
-
-// TODO: dedupe types
-type ReviewItem = {
-	id: string;
-	stars: string;
-	title: string;
-	review: string;
-	author: string;
-	date: string;
-};
-
-type ReviewsResponse = {
-	reviews: ReviewItem[];
-};
+import type { ReviewsResponse } from "@/types/reviews"
 
 export const ReviewsFeed: FC<ReviewsResponse> = ({ reviews }) => {
 	const groupedReviews = useMemo(() => groupReviews(reviews), [reviews]);

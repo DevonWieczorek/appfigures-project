@@ -1,5 +1,6 @@
 import { clsx, type ClassValue } from "clsx"
 import { twMerge } from "tailwind-merge"
+import type { GroupedReviews, ReviewItem } from "@/types/reviews"
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
@@ -31,10 +32,8 @@ export function getReviewGroupLabel(dateString: string, now = new Date()) {
   })
 }
 
-// export function groupReviews(reviews: ReviewItem[]) {
-//   const grouped = new Map<string, ReviewItem[]>()
-export function groupReviews(reviews) {
-  const grouped = new Map();
+export function groupReviews(reviews: ReviewItem[]): GroupedReviews[] {
+  const grouped = new Map<string, ReviewItem[]>();
 
   for (const review of reviews) {
     const label = getReviewGroupLabel(review.date)

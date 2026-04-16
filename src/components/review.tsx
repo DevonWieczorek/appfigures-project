@@ -3,14 +3,9 @@ import { type FC, useMemo } from 'react';
 import dayjs from "dayjs"
 import relativeTime from "dayjs/plugin/relativeTime"
 import { Rating } from "@/components/rating"
+import type { ReviewItem } from "@/types/reviews"
 
-type ReviewProps = {
-	stars: string;
-	title: string;
-	review: string;
-	author: string;
-	date: string;
-}
+type ReviewProps = Pick<ReviewItem, 'stars' | 'title' | 'review' | 'author' | 'date'>
 
 export const Review: FC<ReviewProps> = ({
 	stars,

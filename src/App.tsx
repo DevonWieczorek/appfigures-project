@@ -9,24 +9,12 @@ import {
 } from "@/components/reviews-placeholder"
 import { SearchFilters } from "@/components/search-filters"
 import { useDebouncedSearch } from "@/hooks/useDebouncedSearch"
+import type { ReviewItem, ReviewsResponse } from "@/types/reviews"
 import './styles/index.css'
 
 const BASE_REQUEST_URL = import.meta.env.VITE_BASE_REQUEST_URL;
 const VALID_STARS = new Set(['1', '2', '3', '4', '5']);
 const DEFAULT_PER_PAGE = 25;
-
-type ReviewItem = {
-  id: string;
-  stars: string;
-  title: string;
-  review: string;
-  author: string;
-  date: string;
-};
-
-type ReviewsResponse = {
-  reviews: ReviewItem[];
-};
 
 async function fetchReviews(endpoint: string, signal: AbortSignal): Promise<ReviewsResponse> {
   const res = await fetch(endpoint, { signal })
