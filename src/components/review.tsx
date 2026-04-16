@@ -17,15 +17,15 @@ const Review: FC<ReviewProps> = ({
 	author,
 	date
 }) => (
-	<div className="review-container">
+	<article className="review-container">
 		<Rating value={parseInt(stars)} />
-		<div>{title}</div>
-		<div>{review}</div>
-		<div className='review-footer'>
+		<h3>{title}</h3>
+		<p>{review}</p>
+		<footer className='review-footer'>
 			<div>{author}</div>
-			<div>{date}</div>
-		</div>
-	</div>
+			<time dateTime={date}>{date}</time>
+		</footer>
+	</article>
 );
 
 export default Review;
