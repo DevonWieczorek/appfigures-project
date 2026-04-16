@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback, useMemo } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { LoadMoreButton } from "@/components/load-more-button"
 import { Review } from "@/components/review"
@@ -11,60 +11,87 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
+import { useDebouncedSearch } from "@/hooks/useDebouncedSearch"
 import './styles/index.css'
 
-const reviewData = {
-  "author": "angiemacc",
-  "title": "Photo cleaning",
-  "review": "I love how this refreshes my photos",
-  "original_title": "Photo cleaning",
-  "original_review": "I love how this refreshes my photos",
-  "stars": "5.00",
-  "iso": "GB",
-  "version": null,
-  "date": "2026-04-14T15:44:31",
-  "deleted": false,
-  "has_response": false,
-  "product": 336744124021,
-  "product_id": 336744124021,
-  "product_name": "ChatGPT",
-  "vendor_id": "6448311069",
-  "store": "apple",
-  "weight": 8,
-  "id": "336744124021L5OnsyoDYyhxKK-X9tleVxg",
-  "predicted_langs": [
-    "en"
-  ]
+const BASE_REQUEST_URL = import.meta.env.VITE_BASE_REQUEST_URL;
+
+type ReviewItem = {
+  id: string;
+  stars: string;
+  title: string;
+  review: string;
+  author: string;
+  date: string;
 };
 
+type ReviewsResponse = {
+  reviews: ReviewItem[];
+};
+
+async function fetchStarss(endpoint: string, signal: AbortSignal): Promise<ReviewsResponse> {
+  const res = await fetch(endpoint, { signal })
+  if (!res.ok) throw new Error("Failed to fetch starss");
+  return res.json();
+}
+
 function App() {
-  const reviews = [reviewData, reviewData, reviewData];
+  // TODO: implement a distinction between loading more and loading a fresh set of reviews
+  // TODO: page 2 initial load will get 25 reviews, where as clicking from 1 -> 2 will have 50
 
   const [searchParams, setSearchParams] = useSearchParams();
-  const [loading, setLoading] = useState(false);
-  const [q, setQ] = useState(searchParams.get('q'));
-  const [rating, setRating] = useState(searchParams.get('rating'));
+  const [q, setQ] = useState(searchParams.get('q') ?? '');
+  const [stars, setStars] = useState(searchParams.get('stars') ?? '');
   const [page, setPage] = useState<number>(() => {
     const parsed = Number.parseInt(searchParams.get('page') ?? '');
-    return Number.isNaN(parsed) ? 1 : parsed;
+    return Number.isNaN(parsed) || parsed < 1 ? 1 : parsed;
+  });
+  const [reviews, setReviews] = useState<ReviewItem[]>([]);
+
+  const endpoint = useMemo(() => {
+    const params = new URLSearchParams();
+    const safeQ = q.trim();
+    const safeStars = ['1', '2', '3', '4', '5'].includes(stars) ? stars : '';
+    const safePage = Number.isInteger(page) && page > 0 ? page : 1;
+
+    if (safeQ) params.set("q", safeQ);
+    if (safeStars) params.set("stars", safeStars);
+    params.set("page", safePage.toString());
+
+    return `${BASE_REQUEST_URL}?${params.toString()}`;
+  }, [q, stars, page]);
+
+  const handleSuccess = useCallback((next: ReviewsResponse) => {
+    if (!next.reviews?.length) return;
+    setReviews((prev) => (page === 1 ? next.reviews : [...prev, ...next.reviews]));
+  }, [page]);
+
+  const { loading } = useDebouncedSearch({
+    endpoint,
+    delay: 350,
+    enabled: true,
+    fetcher: fetchStarss,
+    onSuccess: handleSuccess,
   });
 
   useEffect(() => {
     setSearchParams((prev) => {
       const next = new URLSearchParams(prev);
+      const safeQ = q.trim();
+      const safeStars = ['1', '2', '3', '4', '5'].includes(stars) ? stars : '';
+      const safePage = Number.isInteger(page) && page > 0 ? page : 1;
 
-      if (q?.trim()) next.set("q", q.trim());
+      if (safeQ) next.set("q", safeQ);
       else next.delete("q");
 
-      if (rating) next.set("rating", rating);
-      else next.delete("rating");
+      if (safeStars) next.set("stars", safeStars);
+      else next.delete("stars");
 
-      if (page) next.set("page", page.toString());
-      else next.delete("page");
+      if (safePage > 1) next.set("page", safePage.toString());
 
       return next;
     });
-  }, [q, rating, page, setSearchParams]);
+  }, [q, stars, page, setSearchParams]);
 
   return (
     <main className="container mx-auto p-4">
@@ -75,19 +102,26 @@ function App() {
           value={q}
           placeholder="Filter by Keyword"
           type="text"
-          className="w-1/4"
-          onChange={event => setQ(event.target.value)}
+          className="w-1/4 rounded-sm"
+          onChange={event => {
+            setQ(event.target.value);
+            setPage(1);
+          }}
         />
         <Select
-          defaultValue={rating ?? ''}
-          onValueChange={value => setRating(value)}
+          value={stars || 'all'}
+          onValueChange={value => {
+            const nextStars = value === 'all' ? '' : String(value);
+            setStars(nextStars);
+            setPage(1);
+          }}
         >
-          <SelectTrigger className="w-1/4">
+          <SelectTrigger className="w-1/4 rounded-sm">
             <SelectValue placeholder="Filter by Rating" />
           </SelectTrigger>
           <SelectContent>
             <SelectGroup>
-              <SelectItem value={null}>Filter by Rating</SelectItem>
+              <SelectItem value="all">Filter by Rating</SelectItem>
               <SelectItem value="1">1</SelectItem>
               <SelectItem value="2">2</SelectItem>
               <SelectItem value="3">3</SelectItem>
@@ -98,17 +132,22 @@ function App() {
         </Select>
       </form>
 
-      <section className='flex flex-col gap-2 border-1 rounded-sm p-2'>
-        {reviews.map((review, i) => (
-          <Review
-            key={`${review?.date}-${i}`}
-            stars={review?.stars}
-            title={review?.title}
-            review={review?.review}
-            author={review?.author}
-            date={review?.date}
-          />
-        ))}
+      <section id="reviews">
+        {reviews?.length > 0 && (
+          <>
+            <div className='py-2'>Showing {reviews.length} reviews:</div>
+            {reviews?.map((review) => (
+              <Review
+                key={review?.id}
+                stars={review?.stars}
+                title={review?.title}
+                review={review?.review}
+                author={review?.author}
+                date={review?.date}
+              />
+            ))}
+          </>
+        )}
       </section>
 
       <LoadMoreButton
