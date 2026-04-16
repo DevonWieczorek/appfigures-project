@@ -29,7 +29,6 @@ async function fetchReviews(endpoint: string, signal: AbortSignal): Promise<Revi
 }
 
 function App() {
-  // TODO: page 2 initial load will get 25 reviews, where as clicking from 1 -> 2 will have 50
   const [isInitialLoading, setIsInitialLoading] = useState(true);
 
   const [searchParams, setSearchParams] = useSearchParams();
