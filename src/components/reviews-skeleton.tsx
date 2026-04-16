@@ -19,8 +19,8 @@ export const ReviewsSkeleton = ({ count = 4 }) => (
 			<div className="space-y-3">
 
 				<div className="reviews-wrapper space-y-4">
-					{Array(count).fill('').map(() => (
-						<SkeletonText />
+					{Array.from({ length: count }, (_, i) => i + 1).map((_, index) => (
+						<SkeletonText key={index} />
 					))}
 				</div>
 			</div>
