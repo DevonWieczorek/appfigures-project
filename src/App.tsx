@@ -29,45 +29,59 @@ async function fetchReviews(endpoint: string, signal: AbortSignal): Promise<Revi
 }
 
 function App() {
-  const [isInitialLoading, setIsInitialLoading] = useState(true);
-
   const [searchParams, setSearchParams] = useSearchParams();
-  const [q, setQ] = useState(searchParams.get('q') ?? '');
-  const [stars, setStars] = useState(searchParams.get('stars') ?? '');
-  const [page, setPage] = useState<number>(() => {
-    const pageQuery = parseInt(searchParams.get('page'));
-    return Number.isInteger(pageQuery) && pageQuery > 0 ? pageQuery : 1
-  });
   const [reviews, setReviews] = useState<ReviewItem[]>([]);
+  const [loadedFilterKey, setLoadedFilterKey] = useState<string | null>(null);
+
+  const q = useMemo(() => searchParams.get('q')?.trim() ?? '', [searchParams]);
+  const stars = useMemo(() => {
+    const value = searchParams.get('stars') ?? '';
+    return ['1', '2', '3', '4', '5'].includes(value) ? value : '';
+  }, [searchParams]);
+  const page = useMemo(() => {
+    const pageQuery = Number.parseInt(searchParams.get('page') ?? '', 10);
+    return Number.isInteger(pageQuery) && pageQuery > 0 ? pageQuery : 1;
+  }, [searchParams]);
+  const filterKey = useMemo(() => `${q}|${stars}`, [q, stars]);
+  const isInitialLoading = loadedFilterKey !== filterKey;
+
+  useEffect(() => {
+    const next = new URLSearchParams();
+
+    if (q) next.set("q", q);
+    if (stars) next.set("stars", stars);
+    if (page > 1) next.set("page", page.toString());
+
+    if (next.toString() !== searchParams.toString()) {
+      setSearchParams(next, { replace: true });
+    }
+  }, [q, stars, page, searchParams, setSearchParams]);
 
   const endpoint = useMemo(() => {
     const DEFAULT_PER_PAGE = 25;
     const params = new URLSearchParams();
-    const safeQ = q.trim();
-    const safeStars = ['1', '2', '3', '4', '5'].includes(stars) ? stars : '';
-    const safePage = Number.isInteger(page) && page > 0 ? page : 1;
 
-    if (safeQ) params.set("q", safeQ);
-    if (safeStars) params.set("stars", safeStars);
+    if (q) params.set("q", q);
+    if (stars) params.set("stars", stars);
 
-    // Handle deep linking
-    if (isInitialLoading && safePage > 1) {
-      const count = safePage * DEFAULT_PER_PAGE;
+    // Handle deep linking to page > 1 with a single initial request.
+    if (isInitialLoading && page > 1) {
+      const count = page * DEFAULT_PER_PAGE;
       params.set("page", "1");
       params.set("count", count.toString());
-    }
-    else {
-      params.set("page", safePage.toString());
+    } else {
+      params.set("page", page.toString());
     }
 
     return `${BASE_REQUEST_URL}?${params.toString()}`;
   }, [q, stars, page, isInitialLoading]);
 
   const handleSuccess = useCallback((next: ReviewsResponse) => {
-    if (!next.reviews?.length) return;
-    setReviews((prev) => (page === 1 ? next.reviews : [...prev, ...next.reviews]));
-    setIsInitialLoading(false);
-  }, [page]);
+    const nextReviews = next.reviews ?? [];
+
+    setReviews((prev) => (isInitialLoading || page === 1 ? nextReviews : [...prev, ...nextReviews]));
+    setLoadedFilterKey(filterKey);
+  }, [filterKey, isInitialLoading, page]);
 
   const { loading } = useDebouncedSearch({
     endpoint,
@@ -77,24 +91,13 @@ function App() {
     onSuccess: handleSuccess,
   });
 
-  useEffect(() => {
+  const updateSearchParams = useCallback((updater: (next: URLSearchParams) => void) => {
     setSearchParams((prev) => {
       const next = new URLSearchParams(prev);
-      const safeQ = q.trim();
-      const safeStars = ['1', '2', '3', '4', '5'].includes(stars) ? stars : '';
-      const safePage = Number.isInteger(page) && page > 0 ? page : 1;
-
-      if (safeQ) next.set("q", safeQ);
-      else next.delete("q");
-
-      if (safeStars) next.set("stars", safeStars);
-      else next.delete("stars");
-
-      if (safePage > 1) next.set("page", safePage.toString());
-
+      updater(next);
       return next;
     });
-  }, [q, stars, page, setSearchParams]);
+  }, [setSearchParams]);
 
   return (
     <main className="container mx-auto p-4">
@@ -103,16 +106,23 @@ function App() {
       <SearchFilters
         keywordValue={q}
         onKeywordChange={e => {
-          setQ(e.target.value);
-          setPage(1);
-          setIsInitialLoading(true);
+          const nextQ = e.target.value.trim();
+
+          updateSearchParams((next) => {
+            if (nextQ) next.set("q", nextQ);
+            else next.delete("q");
+            next.delete("page");
+          });
         }}
         starsValue={stars || 'all'}
         onStarsChange={value => {
           const nextStars = value === 'all' ? '' : String(value);
-          setStars(nextStars);
-          setPage(1);
-          setIsInitialLoading(true);
+
+          updateSearchParams((next) => {
+            if (nextStars) next.set("stars", nextStars);
+            else next.delete("stars");
+            next.delete("page");
+          });
         }}
       />
 
@@ -124,7 +134,11 @@ function App() {
       <LoadMoreButton
         loading={loading}
         className='mx-auto my-2'
-        onClick={() => setPage(page + 1)}
+        onClick={() => {
+          updateSearchParams((next) => {
+            next.set("page", String(page + 1));
+          });
+        }}
       />
     </main>
   )
