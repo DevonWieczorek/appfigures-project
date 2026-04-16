@@ -132,10 +132,10 @@ function App() {
         </Select>
       </form>
 
-      <section id="reviews">
+      <section id='reviews' className='flex flex-col gap-2 border-1 rounded-sm p-2'>
         {reviews?.length > 0 && (
           <>
-            <div className='py-2'>Showing {reviews.length} reviews:</div>
+            <div className='p-2'>Showing {reviews.length} reviews:</div>
             {reviews?.map((review) => (
               <Review
                 key={review?.id}
