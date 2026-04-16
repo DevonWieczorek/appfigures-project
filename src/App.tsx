@@ -4,6 +4,7 @@ import { LoadMoreButton } from "@/components/load-more-button"
 import { Review } from "@/components/review"
 import { SearchFilters } from "@/components/search-filters"
 import { useDebouncedSearch } from "@/hooks/useDebouncedSearch"
+import { groupReviews } from '@/lib/utils';
 import './styles/index.css'
 
 const BASE_REQUEST_URL = import.meta.env.VITE_BASE_REQUEST_URL;
@@ -27,6 +28,8 @@ async function fetchStars(endpoint: string, signal: AbortSignal): Promise<Review
   return res.json();
 }
 
+
+
 function App() {
   // TODO: implement a distinction between loading more and loading a fresh set of reviews
   // TODO: page 2 initial load will get 25 reviews, where as clicking from 1 -> 2 will have 50
@@ -39,6 +42,7 @@ function App() {
     return Number.isInteger(pageQuery) && pageQuery > 0 ? pageQuery : 1
   });
   const [reviews, setReviews] = useState<ReviewItem[]>([]);
+  const groupedReviews = useMemo(() => groupReviews(reviews), [reviews]);
 
   const endpoint = useMemo(() => {
     const params = new URLSearchParams();
@@ -85,6 +89,8 @@ function App() {
     });
   }, [q, stars, page, setSearchParams]);
 
+  useEffect(() => { console.log(groupedReviews) }, [groupedReviews])
+
   return (
     <main className="container mx-auto p-4">
       <h1>Reviews</h1>
@@ -103,20 +109,28 @@ function App() {
         }}
       />
 
-      <section id='reviews'>
-        {reviews?.length > 0 && (
+      <section id="reviews">
+        {groupedReviews?.length > 0 && (
           <>
-            <div className='py-2'>Showing {reviews.length} reviews:</div>
-            <div className='reviews-wrapper'>
-              {reviews?.map((review) => (
-                <Review
-                  key={review?.id}
-                  stars={review?.stars}
-                  title={review?.title}
-                  review={review?.review}
-                  author={review?.author}
-                  date={review?.date}
-                />
+            <div className="py-2">Showing {reviews.length} reviews:</div>
+            <div className="space-y-8">
+              {groupedReviews.map((group) => (
+                <div key={group.label} className="space-y-3">
+                  <h2 className="text-center">{group.label}</h2>
+
+                  <div className="reviews-wrapper space-y-4">
+                    {group.items.map((review) => (
+                      <Review
+                        key={review.id}
+                        stars={review.stars}
+                        title={review.title}
+                        review={review.review}
+                        author={review.author}
+                        date={review.date}
+                      />
+                    ))}
+                  </div>
+                </div>
               ))}
             </div>
           </>
