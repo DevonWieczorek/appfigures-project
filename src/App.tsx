@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { LoadMoreButton } from "@/components/load-more-button"
-import Review from "@/components/review"
+import { Review } from "@/components/review"
 import { Input } from "@/components/ui/input"
 import {
   Select,

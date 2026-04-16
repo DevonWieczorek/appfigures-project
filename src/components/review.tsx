@@ -10,7 +10,7 @@ type ReviewProps = {
 	date: string;
 }
 
-const Review: FC<ReviewProps> = ({
+export const Review: FC<ReviewProps> = ({
 	stars,
 	title,
 	review,
@@ -30,5 +30,3 @@ const Review: FC<ReviewProps> = ({
 		</footer>
 	</article>
 );
-
-export default Review;
