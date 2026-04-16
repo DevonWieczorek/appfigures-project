@@ -153,14 +153,15 @@
 }
 
 @layer components {
+  .reviews-wrapper {
+    @apply flex flex-col gap-2 border-1 rounded-sm p-2;
+  }
   .review-container {
     @apply w-full border-b-1 my-2 p-2;
   }
-
   .review-container:last-child {
     @apply border-b-0;
   }
-
   .review-footer {
     @apply flex justify-between text-xs text-muted-foreground;
   }
