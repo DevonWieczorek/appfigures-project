@@ -48,6 +48,11 @@ function App() {
   }, [searchParams]);
   const filterKey = useMemo(() => `${q}|${stars}`, [q, stars]);
   const isInitialLoading = loadedFilterKey !== filterKey;
+  const [keywordInput, setKeywordInput] = useState(q);
+
+  useEffect(() => {
+    setKeywordInput(q);
+  }, [q]);
 
   useEffect(() => {
     const next = new URLSearchParams();
@@ -115,9 +120,11 @@ function App() {
       <h1>Reviews</h1>
 
       <SearchFilters
-        keywordValue={q}
+        keywordValue={keywordInput}
         onKeywordChange={e => {
-          const nextQ = e.target.value.trim();
+          const nextKeywordInput = e.target.value;
+          const nextQ = nextKeywordInput.trim();
+          setKeywordInput(nextKeywordInput);
 
           updateSearchParams((next) => {
             if (nextQ) next.set("q", nextQ);
