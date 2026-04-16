@@ -29,7 +29,6 @@ async function fetchReviews(endpoint: string, signal: AbortSignal): Promise<Revi
 }
 
 function App() {
-  // TODO: implement a distinction between loading more and loading a fresh set of reviews
   // TODO: page 2 initial load will get 25 reviews, where as clicking from 1 -> 2 will have 50
   const [isInitialLoading, setIsInitialLoading] = useState(true);
 
@@ -43,6 +42,7 @@ function App() {
   const [reviews, setReviews] = useState<ReviewItem[]>([]);
 
   const endpoint = useMemo(() => {
+    const DEFAULT_PER_PAGE = 25;
     const params = new URLSearchParams();
     const safeQ = q.trim();
     const safeStars = ['1', '2', '3', '4', '5'].includes(stars) ? stars : '';
@@ -50,10 +50,19 @@ function App() {
 
     if (safeQ) params.set("q", safeQ);
     if (safeStars) params.set("stars", safeStars);
-    params.set("page", safePage.toString());
+
+    // Handle deep linking
+    if (isInitialLoading && safePage > 1) {
+      const count = safePage * DEFAULT_PER_PAGE;
+      params.set("page", "1");
+      params.set("count", count.toString());
+    }
+    else {
+      params.set("page", safePage.toString());
+    }
 
     return `${BASE_REQUEST_URL}?${params.toString()}`;
-  }, [q, stars, page]);
+  }, [q, stars, page, isInitialLoading]);
 
   const handleSuccess = useCallback((next: ReviewsResponse) => {
     if (!next.reviews?.length) return;
@@ -112,7 +121,6 @@ function App() {
         <ReviewsSkeleton /> :
         <ReviewsFeed reviews={reviews} />
       }
-
 
       <LoadMoreButton
         loading={loading}
