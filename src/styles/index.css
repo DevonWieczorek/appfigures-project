@@ -131,6 +131,7 @@
   html {
     @apply font-sans;
   }
+  
   h1 { 
     @apply text-3xl font-semibold tracking-tight; 
   }
@@ -139,6 +140,11 @@
   }
   h3 { 
     @apply text-xl font-semibold tracking-tight; 
+  }
+
+  button:not(:disabled),
+  [role="button"]:not(:disabled) {
+    cursor: pointer;
   }
 }
 
