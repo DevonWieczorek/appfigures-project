@@ -43,8 +43,8 @@ function App() {
   const [q, setQ] = useState(searchParams.get('q') ?? '');
   const [stars, setStars] = useState(searchParams.get('stars') ?? '');
   const [page, setPage] = useState<number>(() => {
-    const parsed = Number.parseInt(searchParams.get('page') ?? '');
-    return Number.isNaN(parsed) || parsed < 1 ? 1 : parsed;
+    const pageQuery = parseInt(searchParams.get('page'));
+    return Number.isInteger(pageQuery) && pageQuery > 0 ? pageQuery : 1
   });
   const [reviews, setReviews] = useState<ReviewItem[]>([]);
 
@@ -132,20 +132,22 @@ function App() {
         </Select>
       </form>
 
-      <section id='reviews' className='flex flex-col gap-2 border-1 rounded-sm p-2'>
+      <section id='reviews'>
         {reviews?.length > 0 && (
           <>
-            <div className='p-2'>Showing {reviews.length} reviews:</div>
-            {reviews?.map((review) => (
-              <Review
-                key={review?.id}
-                stars={review?.stars}
-                title={review?.title}
-                review={review?.review}
-                author={review?.author}
-                date={review?.date}
-              />
-            ))}
+            <div className='py-2'>Showing {reviews.length} reviews:</div>
+            <div className='reviews-wrapper'>
+              {reviews?.map((review) => (
+                <Review
+                  key={review?.id}
+                  stars={review?.stars}
+                  title={review?.title}
+                  review={review?.review}
+                  author={review?.author}
+                  date={review?.date}
+                />
+              ))}
+            </div>
           </>
         )}
       </section>
