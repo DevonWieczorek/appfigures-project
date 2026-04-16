@@ -1,9 +1,8 @@
 import { useEffect, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
+import { LoadMoreButton } from "@/components/load-more-button"
 import Review from "@/components/review"
-import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { Spinner } from "@/components/ui/spinner"
 import {
   Select,
   SelectContent,
@@ -112,16 +111,11 @@ function App() {
         ))}
       </section>
 
-      <Button
-        variant="default"
-        size="lg"
-        disabled={loading}
+      <LoadMoreButton
+        loading={loading}
         className='mx-auto my-2'
         onClick={() => setPage(page + 1)}
-      >
-        {loading ? 'Loading' : 'Load More'}
-        {loading && <Spinner data-icon="inline-start" />}
-      </Button>
+      />
     </main>
   )
 }
