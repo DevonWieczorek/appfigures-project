@@ -18,12 +18,15 @@ const Review: FC<ReviewProps> = ({
 	date
 }) => (
 	<article className="review-container">
-		<Rating value={parseInt(stars)} />
+		<Rating value={parseInt(stars)} className='justify-end' />
 		<h3>{title}</h3>
-		<p>{review}</p>
+		<p className='py-2'>{review}</p>
 		<footer className='review-footer'>
 			<div>{author}</div>
-			<time dateTime={date}>{date}</time>
+			<time dateTime={date}>
+				{/* TODO: add date formatting */}
+				{date}
+			</time>
 		</footer>
 	</article>
 );

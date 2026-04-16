@@ -134,6 +134,12 @@
   h1 { 
     @apply text-3xl font-semibold tracking-tight; 
   }
+  h2 { 
+    @apply text-2xl font-semibold tracking-tight; 
+  }
+  h3 { 
+    @apply text-xl font-semibold tracking-tight; 
+  }
 }
 
 @layer components {
@@ -146,6 +152,6 @@
   }
 
   .review-footer {
-    @apply flex justify-between text-sm text-muted-foreground;
+    @apply flex justify-between text-xs text-muted-foreground;
   }
 }
