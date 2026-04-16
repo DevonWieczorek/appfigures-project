@@ -2,15 +2,7 @@ import { useEffect, useState, useCallback, useMemo } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { LoadMoreButton } from "@/components/load-more-button"
 import { Review } from "@/components/review"
-import { Input } from "@/components/ui/input"
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select"
+import { SearchFilters } from "@/components/search-filters"
 import { useDebouncedSearch } from "@/hooks/useDebouncedSearch"
 import './styles/index.css'
 
@@ -97,40 +89,19 @@ function App() {
     <main className="container mx-auto p-4">
       <h1>Reviews</h1>
 
-      <form className="flex flex-row justify-between my-4">
-        <Input
-          value={q}
-          placeholder="Filter by Keyword"
-          type="text"
-          className="w-1/4 rounded-sm"
-          onChange={event => {
-            setQ(event.target.value);
-            setPage(1);
-          }}
-        />
-        <Select
-          value={stars || 'all'}
-          onValueChange={value => {
-            const nextStars = value === 'all' ? '' : String(value);
-            setStars(nextStars);
-            setPage(1);
-          }}
-        >
-          <SelectTrigger className="w-1/4 rounded-sm">
-            <SelectValue placeholder="Filter by Rating" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectGroup>
-              <SelectItem value="all">Filter by Rating</SelectItem>
-              <SelectItem value="1">1</SelectItem>
-              <SelectItem value="2">2</SelectItem>
-              <SelectItem value="3">3</SelectItem>
-              <SelectItem value="4">4</SelectItem>
-              <SelectItem value="5">5</SelectItem>
-            </SelectGroup>
-          </SelectContent>
-        </Select>
-      </form>
+      <SearchFilters
+        keywordValue={q}
+        onKeywordChange={e => {
+          setQ(e.target.value);
+          setPage(1);
+        }}
+        starsValue={stars || 'all'}
+        onStarsChange={value => {
+          const nextStars = value === 'all' ? '' : String(value);
+          setStars(nextStars);
+          setPage(1);
+        }}
+      />
 
       <section id='reviews'>
         {reviews?.length > 0 && (
