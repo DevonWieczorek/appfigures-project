@@ -2,6 +2,7 @@ import { useEffect, useState, useCallback, useMemo } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { LoadMoreButton } from "@/components/load-more-button"
 import { ReviewsFeed } from "@/components/reviews-feed"
+import { ReviewsSkeleton } from "@/components/reviews-skeleton"
 import { SearchFilters } from "@/components/search-filters"
 import { useDebouncedSearch } from "@/hooks/useDebouncedSearch"
 import './styles/index.css'
@@ -30,6 +31,7 @@ async function fetchReviews(endpoint: string, signal: AbortSignal): Promise<Revi
 function App() {
   // TODO: implement a distinction between loading more and loading a fresh set of reviews
   // TODO: page 2 initial load will get 25 reviews, where as clicking from 1 -> 2 will have 50
+  const [isInitialLoading, setIsInitialLoading] = useState(true);
 
   const [searchParams, setSearchParams] = useSearchParams();
   const [q, setQ] = useState(searchParams.get('q') ?? '');
@@ -56,6 +58,7 @@ function App() {
   const handleSuccess = useCallback((next: ReviewsResponse) => {
     if (!next.reviews?.length) return;
     setReviews((prev) => (page === 1 ? next.reviews : [...prev, ...next.reviews]));
+    setIsInitialLoading(false);
   }, [page]);
 
   const { loading } = useDebouncedSearch({
@@ -94,16 +97,22 @@ function App() {
         onKeywordChange={e => {
           setQ(e.target.value);
           setPage(1);
+          setIsInitialLoading(true);
         }}
         starsValue={stars || 'all'}
         onStarsChange={value => {
           const nextStars = value === 'all' ? '' : String(value);
           setStars(nextStars);
           setPage(1);
+          setIsInitialLoading(true);
         }}
       />
 
-      <ReviewsFeed reviews={reviews} />
+      {isInitialLoading ?
+        <ReviewsSkeleton /> :
+        <ReviewsFeed reviews={reviews} />
+      }
+
 
       <LoadMoreButton
         loading={loading}
