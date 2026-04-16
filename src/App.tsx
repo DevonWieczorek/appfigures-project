@@ -21,7 +21,7 @@ type ReviewsResponse = {
   reviews: ReviewItem[];
 };
 
-async function fetchStarss(endpoint: string, signal: AbortSignal): Promise<ReviewsResponse> {
+async function fetchStars(endpoint: string, signal: AbortSignal): Promise<ReviewsResponse> {
   const res = await fetch(endpoint, { signal })
   if (!res.ok) throw new Error("Failed to fetch starss");
   return res.json();
@@ -62,7 +62,7 @@ function App() {
     endpoint,
     delay: 350,
     enabled: true,
-    fetcher: fetchStarss,
+    fetcher: fetchStars,
     onSuccess: handleSuccess,
   });
 
