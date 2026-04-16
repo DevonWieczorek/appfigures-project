@@ -1,6 +1,6 @@
+@import "tailwindcss";
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
-@import "@fontsource-variable/geist";
 
 @tailwind base;
 
@@ -9,8 +9,9 @@
 @tailwind utilities;
 
 @theme inline {
-    --font-heading: var(--font-sans);
-    --font-sans: 'Geist Variable', sans-serif;
+    --font-heading: var(--font-display);
+    --font-sans: 'Inter', sans-serif;
+    --font-display: 'Satoshi', 'Arial', sans-serif;
     --color-sidebar-ring: var(--sidebar-ring);
     --color-sidebar-border: var(--sidebar-border);
     --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
@@ -123,11 +124,28 @@
 @layer base {
   * {
     @apply border-border outline-ring/50;
-    }
+  }
   body {
     @apply bg-background text-foreground;
-    }
+  }
   html {
     @apply font-sans;
-    }
+  }
+  h1 { 
+    @apply text-3xl font-semibold tracking-tight; 
+  }
+}
+
+@layer components {
+  .review-container {
+    @apply w-full border-b-1 my-2 p-2;
+  }
+
+  .review-container:last-child {
+    @apply border-b-0;
+  }
+
+  .review-footer {
+    @apply flex justify-between text-sm text-muted-foreground;
+  }
 }
