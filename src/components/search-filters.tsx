@@ -1,5 +1,6 @@
 import type { FC, ChangeEvent } from 'react';
 import { Input } from "@/components/ui/input"
+import { ALL_STARS_OPTION, STARS_VALUES, type StarsSelectValue } from "@/types/filters"
 import {
 	Select,
 	SelectContent,
@@ -12,15 +13,14 @@ import {
 type SearchFiltersProps = {
 	keywordValue: string;
 	onKeywordChange: (e: ChangeEvent<HTMLInputElement>) => void;
-	// starsValue: "1" | "2" | "3" | "4" | "5" | "" | "all";
-	starsValue: string;
-	onStarsChange: (value: string) => void;
+	starsValue: StarsSelectValue;
+	onStarsChange: (value: StarsSelectValue) => void;
 };
 
 export const SearchFilters: FC<SearchFiltersProps> = ({
 	keywordValue = '',
 	onKeywordChange = () => { },
-	starsValue = 'all',
+	starsValue = ALL_STARS_OPTION,
 	onStarsChange = () => { }
 }) => (
 	<form className="flex flex-row justify-between my-4">
@@ -40,12 +40,10 @@ export const SearchFilters: FC<SearchFiltersProps> = ({
 			</SelectTrigger>
 			<SelectContent>
 				<SelectGroup>
-					<SelectItem value="all">Filter by Rating</SelectItem>
-					<SelectItem value="1">1</SelectItem>
-					<SelectItem value="2">2</SelectItem>
-					<SelectItem value="3">3</SelectItem>
-					<SelectItem value="4">4</SelectItem>
-					<SelectItem value="5">5</SelectItem>
+					<SelectItem value={ALL_STARS_OPTION}>Filter by Rating</SelectItem>
+					{STARS_VALUES.map((value) => (
+						<SelectItem key={value} value={value}>{value}</SelectItem>
+					))}
 				</SelectGroup>
 			</SelectContent>
 		</Select>

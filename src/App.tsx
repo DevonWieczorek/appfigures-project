@@ -10,10 +10,18 @@ import {
 import { SearchFilters } from "@/components/search-filters"
 import { useDebouncedSearch } from "@/hooks/useDebouncedSearch"
 import type { ReviewItem, ReviewsResponse } from "@/types/reviews"
+import {
+  ALL_STARS_OPTION,
+  STARS_VALUES,
+  type ReviewsEndpointParams,
+  type ReviewsQueryParams,
+  type StarsSelectValue,
+  type StarsValue,
+} from "@/types/filters"
 import './styles/index.css'
 
 const BASE_REQUEST_URL = import.meta.env.VITE_BASE_REQUEST_URL;
-const VALID_STARS = new Set(['1', '2', '3', '4', '5']);
+const VALID_STARS = new Set<string>(STARS_VALUES);
 const DEFAULT_PER_PAGE = 25;
 
 async function fetchReviews(endpoint: string, signal: AbortSignal): Promise<ReviewsResponse> {
@@ -26,9 +34,9 @@ function getNormalizedQuery(searchParams: URLSearchParams): string {
   return searchParams.get('q')?.trim() ?? '';
 }
 
-function getNormalizedStars(searchParams: URLSearchParams): string {
+function getNormalizedStars(searchParams: URLSearchParams): ReviewsQueryParams['stars'] {
   const value = searchParams.get('stars') ?? '';
-  return VALID_STARS.has(value) ? value : '';
+  return VALID_STARS.has(value) ? (value as StarsValue) : '';
 }
 
 function getNormalizedPage(searchParams: URLSearchParams): number {
@@ -36,7 +44,7 @@ function getNormalizedPage(searchParams: URLSearchParams): number {
   return Number.isInteger(pageQuery) && pageQuery > 0 ? pageQuery : 1;
 }
 
-function buildCanonicalSearchParams({ q, stars, page }: { q: string; stars: string; page: number }): URLSearchParams {
+function buildCanonicalSearchParams({ q, stars, page }: ReviewsQueryParams): URLSearchParams {
   const next = new URLSearchParams();
   if (q) next.set('q', q);
   if (stars) next.set('stars', stars);
@@ -49,12 +57,7 @@ function buildReviewsEndpoint({
   stars,
   page,
   isInitialLoading,
-}: {
-  q: string;
-  stars: string;
-  page: number;
-  isInitialLoading: boolean;
-}): string {
+}: ReviewsEndpointParams): string {
   const params = new URLSearchParams();
 
   if (q) params.set("q", q);
@@ -142,8 +145,8 @@ function App() {
     });
   }, [updateSearchParams]);
 
-  const handleStarsChange = useCallback((value: string) => {
-    const nextStars = value === 'all' ? '' : value;
+  const handleStarsChange = useCallback((value: StarsSelectValue) => {
+    const nextStars = value === ALL_STARS_OPTION ? '' : value;
 
     updateSearchParams((next) => {
       setParamOrDelete(next, 'stars', nextStars);
@@ -172,7 +175,7 @@ function App() {
       <SearchFilters
         keywordValue={keywordInput}
         onKeywordChange={e => handleKeywordChange(e.target.value)}
-        starsValue={stars || 'all'}
+        starsValue={stars || ALL_STARS_OPTION}
         onStarsChange={handleStarsChange}
       />
 
