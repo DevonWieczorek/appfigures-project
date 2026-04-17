@@ -41,7 +41,7 @@ This enables deep linking (going straight to page 2 via the url should load 50 r
 
 - [ ] Add more AppFigures-specific branding to styles.
 - [ ] Add testing to ensure our code does what it’s supposed to.
-- [ ] Make the reviewed product dynamic, either via a route or a fuzzy search inpu
+- [ ] Make the reviewed product dynamic, either via a route or a fuzzy search input.
 - [ ] Who doesn't love a light/dark mode toggle??
 - [ ] Improved filtering - count per page, language, date range, multiple star selection, click on username to filter by user.
 - [ ] Fine-tuning the debounce time for the api call/setting of keyword in the url.
