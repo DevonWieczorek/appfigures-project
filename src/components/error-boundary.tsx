@@ -16,8 +16,8 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
     return { hasError: true };
   }
 
-  componentDidCatch() {
-    // Intentionally left blank. We can add telemetry integration here later.
+  componentDidCatch(error, info) {
+    console.error(error, info);
   }
 
   render() {
