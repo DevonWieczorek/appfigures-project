@@ -1,4 +1,4 @@
-import { Component, type ErrorInfo, type ReactNode } from "react";
+import { Component, type ReactNode } from "react";
 
 type ErrorBoundaryProps = {
   fallback: ReactNode;
@@ -16,7 +16,7 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
     return { hasError: true };
   }
 
-  componentDidCatch(_error: Error, _errorInfo: ErrorInfo) {
+  componentDidCatch() {
     // Intentionally left blank. We can add telemetry integration here later.
   }
 
