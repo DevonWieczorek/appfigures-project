@@ -100,6 +100,7 @@ function App() {
     setKeywordInput(q);
   }, [q]);
 
+  // Handle no reviews returned for subsequent calls (page !== 1)
   useEffect(() => {
     setReachedEndOfList(false);
   }, [filterKey]);
@@ -188,6 +189,7 @@ function App() {
     if (isInitialLoading) return <ReviewsSkeleton />;
     if (error) return <ReviewsError />;
     if (!loading && reviews.length === 0) return <ReviewsNotFound />;
+
     return (
       <ErrorBoundary fallback={<ReviewsRenderError />}>
         <ReviewsFeed reviews={reviews} />
