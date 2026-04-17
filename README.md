@@ -2,6 +2,22 @@
 
 If you’d like to watch the journey that this application took along the way, feel free to check the commit history in the [Github Repo](https://github.com/DevonWieczorek/appfigures-project). 
 
+## Getting Started
+
+Once you've unzipped this project, navigate to the project directory in your terminal and run:
+
+```bash
+npm install && npm run dev
+```
+
+or 
+
+```bash
+yarn && yarn run dev
+```
+
+depending on your package manager of choice.
+
 ## Bootstrapping
 
 I opted to use Vite to spin up the project. It comes with ESLint, TS, and fast refresh out of the box without need for additional setup like alternatives such as Webpack would require.
@@ -45,3 +61,4 @@ This enables deep linking (going straight to page 2 via the url should load 50 r
 - [ ] Who doesn't love a light/dark mode toggle??
 - [ ] Improved filtering - count per page, language, date range, multiple star selection, click on username to filter by user.
 - [ ] Fine-tuning the debounce time for the api call/setting of keyword in the url.
+- [ ] Back to top button, and scroll-to-latest behavior when new reviews are loaded.
