@@ -23,19 +23,19 @@ export const SearchFilters: FC<SearchFiltersProps> = ({
 	starsValue = ALL_STARS_OPTION,
 	onStarsChange = () => { }
 }) => (
-	<form className="flex flex-row justify-between my-4">
+	<form className="flex flex-col md:flex-row justify-between gap-2 my-4">
 		<Input
 			value={keywordValue}
 			placeholder="Filter by Keyword"
 			type="text"
-			className="w-1/4 rounded-sm"
+			className="w-full md:w-1/4 rounded-sm"
 			onChange={onKeywordChange}
 		/>
 		<Select
 			value={starsValue}
 			onValueChange={onStarsChange}
 		>
-			<SelectTrigger className="w-1/4 rounded-sm">
+			<SelectTrigger className="w-full md:w-1/4 rounded-sm">
 				<SelectValue placeholder="Filter by Rating" />
 			</SelectTrigger>
 			<SelectContent>
