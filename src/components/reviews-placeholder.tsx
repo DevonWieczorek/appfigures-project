@@ -30,7 +30,8 @@ export const ReviewsError = () => (
 
 export const ReviewsRenderError = () => (
 	<StatePanel id="reviews-render-error" innerClassName="py-4 text-center error">
-		There was an error rendering your reviews. Please refresh the page and try again.
+		<h3>It's not you, it's us.</h3>
+		There was an error showing your reviews. Please refresh the page and try again.
 	</StatePanel>
 );
 
