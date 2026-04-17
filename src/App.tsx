@@ -5,10 +5,12 @@ import { ReviewsFeed } from "@/components/reviews-feed"
 import {
   ReviewsSkeleton,
   ReviewsError,
-  ReviewsNotFound
+  ReviewsNotFound,
+  ReviewsRenderError
 } from "@/components/reviews-placeholder"
 import { SearchFilters } from "@/components/search-filters"
 import { useDebouncedSearch } from "@/hooks/useDebouncedSearch"
+import { ErrorBoundary } from "@/components/error-boundary"
 import type { ReviewItem, ReviewsResponse } from "@/types/reviews"
 import {
   ALL_STARS_OPTION,
@@ -186,7 +188,11 @@ function App() {
     if (isInitialLoading) return <ReviewsSkeleton />;
     if (error) return <ReviewsError />;
     if (!loading && reviews.length === 0) return <ReviewsNotFound />;
-    return <ReviewsFeed reviews={reviews} />;
+    return (
+      <ErrorBoundary fallback={<ReviewsRenderError />}>
+        <ReviewsFeed reviews={reviews} />
+      </ErrorBoundary>
+    );
   }, [isInitialLoading, error, loading, reviews]);
 
   return (

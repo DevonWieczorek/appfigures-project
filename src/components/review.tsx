@@ -20,7 +20,7 @@ export const Review: FC<ReviewProps> = ({
 	}, [date]);
 
 	return (
-		<article className="review-container">
+		<article className="content-panel">
 			<Rating value={parseInt(stars)} className='justify-end' />
 			<h3 className='pt-2 md:pt-0 pb-1'>{title}</h3>
 			<p className='py-2'>{review}</p>

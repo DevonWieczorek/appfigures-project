@@ -166,10 +166,10 @@
     @apply flex flex-col gap-2 border-1 rounded-sm p-2;
     background-color: var(--appfigures-bg);
   }
-  .review-container {
+  .content-panel {
     @apply w-full border-b-1 my-2 p-2;
   }
-  .review-container:last-child {
+  .content-panel:last-child {
     @apply border-b-0;
   }
   .review-footer {

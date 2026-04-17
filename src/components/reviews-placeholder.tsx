@@ -1,16 +1,9 @@
-import type { ReactNode, FC } from "react";
 import { Skeleton } from "@/components/ui/skeleton"
-import { cn } from "@/lib/utils";
-
-type ReviewsPlaceholderProps = {
-	id: string;
-	innerClassName?: string;
-	children?: ReactNode;
-};
+import { StatePanel } from "@/components/state-panel";
 
 export const SkeletonText = () => {
 	return (
-		<div className="review-container">
+		<div className="content-panel">
 			<div className="flex w-full max-w-xs flex-col gap-2">
 				<Skeleton className="h-4 w-full bg-muted-foreground" />
 				<Skeleton className="h-4 w-full bg-muted-foreground" />
@@ -20,37 +13,31 @@ export const SkeletonText = () => {
 	)
 }
 
-export const ReviewsPlaceholder: FC<ReviewsPlaceholderProps> = ({ id, innerClassName = '', children }) => (
-	<section id={id}>
-		<div className="space-y-8">
-			<div className="space-y-3">
-				<div className={cn(
-					"reviews-wrapper space-y-4",
-					innerClassName
-				)}>
-					{children}
-				</div>
-			</div>
-		</div>
-	</section>
-);
-
 export const ReviewsNotFound = () => (
-	<ReviewsPlaceholder id="no-reviews" innerClassName="py-4 text-center">
+	<StatePanel id="no-reviews" innerClassName="py-4 text-center">
+		<h3>Wow, you really know what you want huh?</h3>
 		There are no results based on the filter criteria you provided.
-	</ReviewsPlaceholder>
+		You should never settle, but maybe loosen your search criteria and try again.
+	</StatePanel>
 );
 
 export const ReviewsError = () => (
-	<ReviewsPlaceholder id="reviews-error" innerClassName="py-4 text-center error">
+	<StatePanel id="reviews-error" innerClassName="py-4 text-center error">
+		<h3>It's not you, it's us.</h3>
 		There was an error fetching your reviews. Please refresh the page and try again.
-	</ReviewsPlaceholder>
+	</StatePanel>
+);
+
+export const ReviewsRenderError = () => (
+	<StatePanel id="reviews-render-error" innerClassName="py-4 text-center error">
+		There was an error rendering your reviews. Please refresh the page and try again.
+	</StatePanel>
 );
 
 export const ReviewsSkeleton = ({ count = 4 }) => (
-	<ReviewsPlaceholder id="loading-reviews">
+	<StatePanel id="loading-reviews">
 		{Array.from({ length: count }, (_, i) => i + 1).map((_, index) => (
 			<SkeletonText key={index} />
 		))}
-	</ReviewsPlaceholder>
+	</StatePanel>
 );
