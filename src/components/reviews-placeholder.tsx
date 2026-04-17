@@ -1,5 +1,12 @@
+import type { ReactNode, FC } from "react";
 import { Skeleton } from "@/components/ui/skeleton"
 import { cn } from "@/lib/utils";
+
+type ReviewsPlaceholderProps = {
+	id: string;
+	innerClassName?: string;
+	children?: ReactNode;
+};
 
 export const SkeletonText = () => {
 	return (
@@ -13,7 +20,7 @@ export const SkeletonText = () => {
 	)
 }
 
-export const ReviewsPlaceholder = ({ id, innerClassName = '', children }) => (
+export const ReviewsPlaceholder: FC<ReviewsPlaceholderProps> = ({ id, innerClassName = '', children }) => (
 	<section id={id}>
 		<div className="space-y-8">
 			<div className="space-y-3">
