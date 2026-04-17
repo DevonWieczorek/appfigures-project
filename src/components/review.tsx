@@ -1,9 +1,10 @@
-
 import { type FC, useMemo } from 'react';
 import dayjs from "dayjs"
 import relativeTime from "dayjs/plugin/relativeTime"
 import { Rating } from "@/components/rating"
 import type { ReviewItem } from "@/types/reviews"
+
+dayjs.extend(relativeTime)
 
 type ReviewProps = Pick<ReviewItem, 'stars' | 'title' | 'review' | 'author' | 'date'>
 
@@ -14,8 +15,6 @@ export const Review: FC<ReviewProps> = ({
 	author,
 	date
 }) => {
-	dayjs.extend(relativeTime)
-
 	const formattedDate = useMemo(() => {
 		return dayjs(date).fromNow()
 	}, [date]);
