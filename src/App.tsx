@@ -84,6 +84,7 @@ function App() {
   const [searchParams, setSearchParams] = useSearchParams();
   const [reviews, setReviews] = useState<ReviewItem[]>([]);
   const [loadedFilterKey, setLoadedFilterKey] = useState<string | null>(null);
+  const [reachedEndOfList, setReachedEndOfList] = useState(false);
 
   const q = useMemo(() => getNormalizedQuery(searchParams), [searchParams]);
   const stars = useMemo(() => getNormalizedStars(searchParams), [searchParams]);
@@ -96,6 +97,10 @@ function App() {
   useEffect(() => {
     setKeywordInput(q);
   }, [q]);
+
+  useEffect(() => {
+    setReachedEndOfList(false);
+  }, [filterKey]);
 
   // Handle updating of filter values and syncing to url
   useEffect(() => {
@@ -115,7 +120,23 @@ function App() {
   const handleSuccess = useCallback((next: ReviewsResponse) => {
     const nextReviews = next.reviews ?? [];
 
-    setReviews((prev) => (isInitialLoading || page === 1 ? nextReviews : [...prev, ...nextReviews]));
+    // Load more (page > 1 after initial load for this filter): append new rows only.
+    // Empty page = end of list — leave existing reviews as-is so we never flash ReviewsNotFound.
+    if (page > 1 && !isInitialLoading) {
+      if (nextReviews.length === 0) {
+        setReachedEndOfList(true);
+        setLoadedFilterKey(filterKey);
+        return;
+      }
+      setReachedEndOfList(false);
+      setReviews((prev) => [...prev, ...nextReviews]);
+      setLoadedFilterKey(filterKey);
+      return;
+    }
+
+    // First page, filter change, or deep-link bulk fetch (page > 1 while still "initial" for this filter).
+    setReachedEndOfList(false);
+    setReviews(nextReviews);
     setLoadedFilterKey(filterKey);
   }, [filterKey, isInitialLoading, page]);
 
@@ -181,8 +202,15 @@ function App() {
 
       {reviewSection}
 
+      {reachedEndOfList && reviews.length > 0 && !error && (
+        <p className="text-center text-sm text-muted-foreground py-2">
+          No more reviews to load.
+        </p>
+      )}
+
       <LoadMoreButton
         loading={loading}
+        disabled={reachedEndOfList && reviews.length > 0}
         className='mx-auto my-2'
         onClick={handleLoadMore}
       />

@@ -6,17 +6,19 @@ type LoadMoreButtonProps = {
 	loading: boolean;
 	onClick: () => void;
 	className?: string;
+	disabled?: boolean;
 }
 
 export const LoadMoreButton: FC<LoadMoreButtonProps> = ({
 	loading = false,
+	disabled = false,
 	onClick,
 	className = ''
 }) => (
 	<Button
 		variant="default"
 		size="lg"
-		disabled={loading}
+		disabled={loading || disabled}
 		className={className}
 		onClick={onClick}
 	>
