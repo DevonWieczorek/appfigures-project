@@ -1,4 +1,14 @@
-# React + TypeScript + Vite
+# AppFigures Coding Challenge
+
+If you’d like to watch the journey that this application took along the way, feel free to check the commit history in the [Github Repo](https://github.com/DevonWieczorek/appfigures-project). 
+
+## Bootstrapping
+
+I opted to use Vite to spin up the project. It comes with ESLint, TS, and fast refresh out of the box without need for additional setup like alternatives such as Webpack would require.
+
+NextJS was another contender but it felt like overkill for this project since there’s only one route. It would have helped with obscuring API endpoint however.
+
+## React + TypeScript + Vite
 
 This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
 
@@ -11,63 +21,27 @@ Currently, two official plugins are available:
 
 The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
 
-## Expanding the ESLint configuration
+## Styling
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+For convenience that still offers strong customization, I opted to use TailwindCSS.
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+Potential pitfall of this decision is that there could be a learning curve for other devs who haven’t worked with Tailwind. For a project this small, custom styles via css modules would have been sufficient, however Tailwind is a bit of a time saver and would prove more useful as the app grows.
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+## Environment Variables
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+I wanted to push my work to Github just in case of disaster. It was requested that I not make the API endpoint public, so I opted to use an env variable. If we were to actually run this code on a server, it would still expose that endpoint when making network requests, in which case we would want to use a server-to-server call. Since this app doesn’t need to be hosted anywhere, an environment variable will suffice.
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+## Data Flow
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+For this app, URL params are treated as the source of truth. When a user changes an input’s value, the value is pushed into the query param. When the search params are updated, the app validates the value and then makes a subsequent api call with the new filter criteria. 
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+This enables deep linking (going straight to page 2 via the url should load 50 reviews, not 25), and preserves navigation history.
+
+## Future Improvements
+
+- [ ] Add more AppFigures-specific branding to styles.
+- [ ] Add testing to ensure our code does what it’s supposed to.
+- [ ] Make the reviewed product dynamic, either via a route or a fuzzy search inpu
+- [ ] Who doesn't love a light/dark mode toggle??
+- [ ] Improved filtering - count per page, language, date range, multiple star selection, click on username to filter by user.
+- [ ] Fine-tuning the debounce time for the api call/setting of keyword in the url.
